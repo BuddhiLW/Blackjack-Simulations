@@ -36,6 +36,7 @@ end
 #+end_src
 
 * Julia animation plotting
+** Infinite deck
 - [[https://stackoverflow.com/questions/46535347/how-to-animate-changing-histogram-in-plots-jl][Q&A]] (Stack Overflow)
 #+begin_src julia :session main :result output
 using DataStructures
@@ -57,6 +58,27 @@ end
 
 gif(anim, "mygif.gif", fps=1)
 #+end_src
+
+** Finite deck, with no replacement
+#+begin_src julia :session main :result output
+function cardEventNR(n=1, dks=6, r=false)
+    c = repeat(cards, 4 * dks) # 4 cards per number of decks per card-type
+    hits = sample(c, n, replace=r)
+    return hits
+end
+
+frequency3 = cardEventNR(312, 6)
+
+anim3 = @animate for i = 1:(13*6*4)
+    f = counter(frequency3[1:i])
+    P = [j / sum(f) for j in values(f)]
+    title = "$i retiradas"
+    bar([keys(f)...], P, title=title)
+end
+
+gif(anim3, "mygif-noreplace.gif", fps=10)
+#+end_src
+
 * Bash conversion with ffmpeg to mp4
 #+begin_src shell
 ffmpeg -i mygif.gif -c:v libx264 -profile:v baseline -level 3.0 -pix_fmt yuv420p working.mp4
