@@ -5,11 +5,8 @@
 Let's suppose we just started a hand, 6 decks of 52 cards.
 
 The probability to have a ten and an ace is of:
-\begin{equation}
-\begin{aligned}
-P(\text{BJ}) = \dfrac{N(A;10s)}{N(\text{possible pairs})}
-\end{aligned}
-\end{equation}
+
+$P(\mathrm{BJ}) = \dfrac{N(A;10s)}{N(\mathrm{possible pairs})}$
 
 In which, $N(A;10s)=(6.4)\times(6.4.4)$. And, $N(\text{possible pairs})=(6.52)\times(6.52-1)$.
 
