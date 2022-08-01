@@ -1,3 +1,6 @@
+module CardReplacement
+export cardEvent
+
 using StatsBase
 using Plots;
 pyplot();
