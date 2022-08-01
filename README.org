@@ -1,0 +1,63 @@
+#+title: Readme
+
+* Probability of having a BlackJack
+
+Let's suppose we just started a hand, 6 decks of 52 cards.
+
+The probability to have a ten and an ace is of:
+\begin{equation}
+\begin{aligned}
+P(\text{BJ}) = \dfrac{N(A;10s)}{N(\text{possible pairs})}
+\end{aligned}
+\end{equation}
+
+In which, $N(A;10s)=(6.4)\times(6.4.4)$. And, $N(\text{possible pairs})=(6.52)\times(6.52-1)$.
+
+
+#+begin_src julia-vterm :session main :result output
+P = ((6*4)*(6*4*4))/((6*52)*(6*52-1))
+#+end_src
+
+Therefore, the probability is 0.023744744001978728
+* Card Event (random card pick, infinite deck)
+#+begin_src julia-vterm :session main :result output
+function cardEvent()
+
+    hit = rand(1:pcards)
+    if deck[hit].first == "A"
+        deck[hit].first
+        # Printf.@printf("%1.0f or, %1.0f", deck[hit].second[1], deck[hit].second[2])
+    else
+        return string(deck[hit].second[1])
+    end
+    # hitCounts = counts(hit, 1:pcards)
+    # return maximum(hitCounts) > 1
+end
+#+end_src
+
+* Julia animation plotting
+- [[https://stackoverflow.com/questions/46535347/how-to-animate-changing-histogram-in-plots-jl][Q&A]] (Stack Overflow)
+#+begin_src julia-vterm :session main :result output
+using DataStructures
+N = 10^3
+frequency2 = [cardEvent() for _ in 1:N]
+anim = @animate for i = 1:N
+    if i < 10
+        f = counter(frequency2[1:i])
+        P = [j / sum(f) for j in values(f)]
+
+        bar([keys(f)...], P, title=L"\mathbf{retiradas}")
+    elseif mod(i, 10) == 0
+        f = counter(frequency2[1:i])
+        P = [j / sum(f) for j in values(f)]
+
+        bar([keys(f)...], P, title=L"\mathbf{retiradas}")
+    end
+end
+
+gif(anim, "mygif.gif", fps=1)
+#+end_src
+* Bash conversion with ffmpeg to mp4
+#+begin_src shell
+ffmpeg -i mygif.gif -c:v libx264 -profile:v baseline -level 3.0 -pix_fmt yuv420p working.mp4
+#+end_src
