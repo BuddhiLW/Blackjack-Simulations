@@ -14,13 +14,13 @@ P(\text{BJ}) = \dfrac{N(A;10s)}{N(\text{possible pairs})}
 In which, $N(A;10s)=(6.4)\times(6.4.4)$. And, $N(\text{possible pairs})=(6.52)\times(6.52-1)$.
 
 
-#+begin_src julia-vterm :session main :result output
+#+begin_src julia :session main :result output
 P = ((6*4)*(6*4*4))/((6*52)*(6*52-1))
 #+end_src
 
 Therefore, the probability is 0.023744744001978728
 * Card Event (random card pick, infinite deck)
-#+begin_src julia-vterm :session main :result output
+#+begin_src julia :session main :result output
 function cardEvent()
 
     hit = rand(1:pcards)
@@ -37,7 +37,7 @@ end
 
 * Julia animation plotting
 - [[https://stackoverflow.com/questions/46535347/how-to-animate-changing-histogram-in-plots-jl][Q&A]] (Stack Overflow)
-#+begin_src julia-vterm :session main :result output
+#+begin_src julia :session main :result output
 using DataStructures
 N = 10^3
 frequency2 = [cardEvent() for _ in 1:N]
