@@ -1,5 +1,37 @@
 #+title: Readme
 
+* Terminology
+|-------------+-----------------------------------|
+| Terminology | Meaning                           |
+|-------------+-----------------------------------|
+| CNR         | Count with No Replacement         |
+| BJcore      | core of the Blackjack application |
+|-------------+-----------------------------------|
+* Helper functions
+** High-order functions
+
+Commonly we find the pattern P(event(e1,e2)) = P((f(e1) && g(e2)) || (f(e2) && g(e1))), in which =f= and =g= are boolean functions.
+
+So, we write this pattern with high-order functions.
+
+*** Example
+
+#+begin_src julia :session main :result output
+function isCombination(f, g, e1, e2)
+    if (f(e1) && g(e2)) || (f(e2) && g(e1))
+        true
+    else
+        false
+    end
+end
+
+
+# isBJ
+function isBJ(e1, e2)
+    isCombination(BJcore.isA, BJcore.isTens, e1, e2)
+end
+#+end_src
+
 * Probability of having a BlackJack
 ** Analytically, considering no replacement
 Let's suppose we just started a hand, 6 decks of 52 cards.
@@ -111,6 +143,80 @@ anim3 = @animate for i = 1:(13*6*4)
 end
 
 gif(anim3, "mygif-noreplace.gif", fps=10)
+#+end_src
+* Decks WithOut cards
+=preferences= must follow the structure =Vector{Pair{String,Int64}}=, e.i., ["A" => 3, "K"=>3].
+
+Given the chosen =n= decks, we have $n.(4.13)=n.52$ cards. But, we are going to remove certain cards by a given quantity $m <= 4.n$ (4.n is the total quantity of cards of a type).
+
+We take =m=, divide by 4, and take the floor. Thus, we have of many complete decks are emptied by that card-type. Further, we take the modulus =mod(m,4)=, so we have how many cards have to be depleted from a deck. Finally, we removed all cards of this type with the given quantity asked.
+
+# #+begin_src julia :session main :result output
+
+# #+end_src
+
+* Notes on studying Julia
+** Metaprogramming
+*** Use calculating probabilities
+
+We have the following, when we calculate the probability of getting a blackjack at first play - for context,
+
+#+begin_src julia :session main :result output
+function P_BJ(n=10^6)
+    N = n
+    cnt = 0
+    for i in 1:N
+        event = CNR.CardEventNR(3, 6)
+        if ((BJcore.isA(event[1]) && BJcore.isTens(event[3])) || (BJcore.isA(event[3]) && BJcore.isTens(event[1])))
+            cnt += 1
+        end
+    end
+    P_BJ = cnt / N # => ~0.0475
+    print("Probability of BJ, at first hand: $(P_BJ)")
+end
+end
+#+end_src
+
+We notice that, on the line,
+#+begin_src julia :session main :result output
+if ((BJcore.isA(event[1]) && BJcore.isTens(event[3])) || (BJcore.isA(event[3]) && BJcore.isTens(event[1])))
+#+end_src
+
+There is a pattern that is common on calculating probabilities for any event that doesn't depend on order. That is, f(a).g(b) + f(b).g(a).
+
+#+begin_src julia :session main :result output
+macro isCombination(f,g,e1,e2)
+    return :( ( f(e1) && g(e2) ) || ( f(e2) && g(e1) ) )
+end
+#+end_src
+
+#+begin_src julia :session main :result output
+function make_expr2(op, opr1, opr2)
+    opr1f, opr2f = map(x -> isa(x, Number) ? 2*x : x, (opr1, opr2))
+    retexpr = Expr(:call, op, opr1f, opr2f)
+    return retexpr
+end
+#+end_src
+
+
+*** Julia documentation example
+[[https://docs.julialang.org/en/v1/manual/metaprogramming/#Functions-on-Expressions]]
+#+begin_src julia :session main :result output
+julia> function make_expr2(op, opr1, opr2)
+           opr1f, opr2f = map(x -> isa(x, Number) ? 2*x : x, (opr1, opr2))
+           retexpr = Expr(:call, op, opr1f, opr2f)
+           return retexpr
+       end
+make_expr2 (generic function with 1 method)
+
+julia> make_expr2(:+, 1, 2)
+:(2 + 4)
+
+julia> ex = make_expr2(:+, 1, Expr(:call, :*, 5, 8))
+:(2 + 5 * 8)
+
+julia> eval(ex)
+42
 #+end_src
 
 * Bash conversion with ffmpeg to mp4
