@@ -1,8 +1,10 @@
 module BlackJack
-include("../noreplace-histogram.jl")
-include("../constants/core.jl")
-include("../counter_HiLo.jl")
+include("noreplace-histogram.jl")
+include("constants/core.jl")
+include("counter_HiLo.jl")
 
+using .BJCore
+export isCombination, isBJ, P_BJ
 
 # Help functions
 function isCombination(f, g, e1, e2)
@@ -16,7 +18,7 @@ end
 
 # isBJ
 function isBJ(e1, e2)
-    isCombination(BJcore.isA, BJcore.isTens, e1, e2)
+    isCombination(BJCore.isA, BJCore.isTens, e1, e2)
 end
 
 

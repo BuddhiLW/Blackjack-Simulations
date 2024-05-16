@@ -1,13 +1,15 @@
 module CNR
-export cardEventNR
 
 include("constants/core.jl")
+using .BJCore
+export cardEventNR
+
 
 using StatsBase
 using DataStructures
 
 function CardEventNR(n=1, dks=6, r=false)
-    c = repeat(BJcore.cards, 4 * dks) # 4 cards per number of decks per card-type
+    c = repeat(BJCore.cards, 4 * dks) # 4 cards per number of decks per card-type
     hits = sample(c, n, replace=r)
     return hits
 end

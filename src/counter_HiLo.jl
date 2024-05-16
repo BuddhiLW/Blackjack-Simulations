@@ -8,7 +8,7 @@ include("constants/core.jl")
 
 # DecksWOC: Decks WithOut Cards
 using Shuffle
-function DecksWOC(n=1, preferences::Vector{Pair{String,Int64}}=[], deck=BJcore.cards)
+function DecksWOC(n=1, preferences::Vector{Pair{String,Int64}}=[], deck=BJCore.cards)
     cards = shuffle!(repeat(deck, 4 * n))
 
     if preferences == []

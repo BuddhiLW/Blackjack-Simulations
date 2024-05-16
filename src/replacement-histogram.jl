@@ -5,10 +5,10 @@ include("src/core.jl")
 
 function CardEvent()
     hit = rand(1:pcards)
-    if BJcore.deck[hit].first == "A"
-        BJcore.deck[hit].first
+    if BJCore.deck[hit].first == "A"
+        BJCore.deck[hit].first
     else
-        return string(BJcore.deck[hit].second[1])
+        return string(BJCore.deck[hit].second[1])
     end
 end
 end
