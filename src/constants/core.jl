@@ -33,15 +33,16 @@ mutable struct Hand
     # InitialCards::Pair{Card, Card}
     Cards::Vector{PlayingCards.Card}
     Value::Int
+    Bet::Float64
     function Hand(cards::Vector{PlayingCards.Card}=[], Value::Int=0)
         if cards == []
             Cards::Vector{PlayingCards.Card} = []
             Value = 0
-            new(Cards, Value)
+            new(Cards, Value, Bet)
         else
             Cards = cards
             Value = sum(Cards)
-            new(Cards, Value)
+            new(Cards, Value, Bet)
         end
     end
 end
