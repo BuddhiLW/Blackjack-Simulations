@@ -29,18 +29,20 @@ end
 #     return card
 # end
 
+# abstract type CardsType  <: Vector{Any} end
+
 mutable struct Hand
     # InitialCards::Pair{Card, Card}
-    Cards::Vector{PlayingCards.Card}
+    Cards
     Value::Int
     Bet::Float64
-    function Hand(cards::Vector{PlayingCards.Card}=[], Value::Int=0)
-        if cards == []
-            Cards::Vector{PlayingCards.Card} = []
+    function Hand(cards=[], Value::Int=0, Bet=0.0)
+        if isempty(cards)
+            Cards = []
             Value = 0
             new(Cards, Value, Bet)
         else
-            Cards = cards
+            Cards::Vector{PlayingCards.Card} = cards
             Value = sum(Cards)
             new(Cards, Value, Bet)
         end

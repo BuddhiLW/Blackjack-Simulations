@@ -4,12 +4,12 @@ using Test
 println("Testing...")
 
 @testset "Example tests" begin
-    # @testset "Math tests" begin
-    #     include("math_tests.jl")
-    # end
-
     @testset "Playing Cards package tests" begin
         include("cards_tests.jl")
+    end
+
+    @testset "Player struct and instantiation" begin
+        include("player_tests.jl")
     end
 end
 

@@ -2,17 +2,14 @@ module BlackJack
 include("noreplace-histogram.jl")
 include("constants/core.jl")
 include("counter_HiLo.jl")
+include("game/core.jl")
 
 using .BJCore
 export isCombination, isBJ, P_BJ
 
 # Help functions
 function isCombination(f, g, e1, e2)
-    if (f(e1) && g(e2)) || (f(e2) && g(e1))
-        true
-    else
-        false
-    end
+    (f(e1) && g(e2)) || (f(e2) && g(e1))
 end
 
 
