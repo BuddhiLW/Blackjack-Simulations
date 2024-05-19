@@ -2,16 +2,35 @@ module Game
 
 # using Base: PartitionIterator
 include("../constants/core.jl")
+# import .BlackJack
 import .BJCore
 using PlayingCards
 using Random
 import UUIDs
 
-export SitStruct, Dealer, Player, Round
+export SitStruct, Dealer, Player, Round, newSit!, leaveSit!
 
 struct SitStruct
     ID::Int64
 end
+
+
+struct SitsStruct
+    dict::Set{SitStruct}
+    function SitsStruct()
+        new(Set())
+    end
+    function SitsStruct(sit::SitStruct)
+        new(Set(sit))
+    end
+    function SitsStruct(set::Set{SitStruct})
+        new(set)
+    end
+end
+
+# # function iterate(sits::SitsStruct)
+# Base.iterate(sits::SitsStruct, sit) = isempty(sit) ? nothing : ## TODO: write first, next (state*state, state+1)
+# # end
 
 struct Dealer
     ID::UUIDs.UUID
@@ -21,26 +40,17 @@ struct Dealer
     DownCard::PlayingCards.Card
 end
 
-# struct SitHand
-#     Sit::Dict{SitStruct, BJCore.Hand}
-#     function SitHand(i::Int)
-#         new(Dict(SitStruct(i) => BJCore.Hand()))
-#     end
-#     function SitHand(d::Dict{SitStruct, BJCore.Hand})
-#         new(d)
-#     end
-#     function get(i::Int)
-#         Base.get(Sit, SitStruct(i), BJCore.Hand())
-#     end
-# end
-# abstract type AbstractHands <: Dict{SitStruct, BJCore.Hand} end
-
 struct Hands
     Sits::Dict{SitStruct, BJCore.Hand}
     function Hands(Sits)
         new(Sits)
     end
+    function Hands()
+        new(Dict())
+    end
 end
+Base.push!(hands::Hands, sit::SitStruct, hand::BJCore.Hand) = push!(hands.Sits, sit => hand)
+Base.pop!(hands::Hands, sit::SitStruct) = pop!(hands.Sits, sit)
 
 function get(sits::Dict{SitStruct, BJCore.Hand}, id::Int)
     Base.get(sits, SitStruct(id), BJCore.Hand())
@@ -49,17 +59,35 @@ end
 struct Player
     ID::UUIDs.UUID
     Name::String
-    Hands::Hands
     Bank::Float64
-    Sits::Vector{SitStruct}
-    function Player(Name,
-                    Bank,
-                    Sits=[SitStruct(0)],
-                    Hands=Hands(Dict(SitStruct(0) => BJCore.Hand())))
-        rng = Random.MersenneTwister(1234);
-        uuid = UUIDs.uuid4(rng)
-        new(uuid, Name, Hands, Bank, Sits)
+    Hands::Hands
+    Sits::SitsStruct
+    function Player(Name::String,
+                    Bank::Float64,
+                    Sits=SitsStruct(),    # SitStruct(0)
+                    Hands=Hands())        # Dict(SitStruct(0) => BJCore.Hand()))
+        # rng = Random.MersenneTwister(1234);
+        uuid = UUIDs.uuid4() # rng
+        new(uuid, Name, Bank, Hands, Sits)
     end
+end
+
+function Base.show(io::IO, obj::Player)
+    println(io, "Player: ", obj.Name, ",\nBank: ", obj.Bank, ",\nPlaying hands: ", obj.Hands.Sits)
+end
+
+Base.push!(sits::SitsStruct, sit::SitStruct) = push!(sits.dict, sit)
+
+function newSit!(player::Player, sit::SitStruct)
+    push!(player.Sits, sit)
+    push!(player.Hands.Sits, sit => BJCore.Hand())
+end
+
+Base.pop!(sits::SitsStruct, sit::SitStruct) = pop!(sits.dict, sit)
+
+function leaveSit!(player::Player, sit::SitStruct)
+    pop!(player.Hands.Sits, sit)
+    pop!(player.Sits, sit)
 end
 
 mutable struct Round
@@ -72,6 +100,5 @@ mutable struct Round
 
     end
 end
-
 
 end

@@ -14,7 +14,7 @@ using Test
     end
 
     @testset "New hand" begin
-        push!(player.Hands.Sits, BlackJack.Game.SitStruct(1) => BlackJack.Game.BJCore.Hand([PlayingCards.A♡, PlayingCards.K♠]))
+        push!(player.Hands.Sits, BlackJack.Game.SitStruct(1) => BlackJack.BJCore.Hand([PlayingCards.A♡, PlayingCards.K♠]))
         @test BlackJack.Game.get(player.Hands.Sits,1).Cards == PlayingCards.Card[A♡, K♠]
     end
 end
