@@ -1,8 +1,6 @@
 module Game
 
-# using Base: PartitionIterator
 include("../constants/core.jl")
-# import .BlackJack
 import .BJCore
 using PlayingCards
 using Random
@@ -13,7 +11,6 @@ export SitStruct, Dealer, Player, Round, newSit!, leaveSit!
 struct SitStruct
     ID::Int64
 end
-
 
 struct SitsStruct
     dict::Set{SitStruct}
@@ -27,10 +24,8 @@ struct SitsStruct
         new(set)
     end
 end
-
-# # function iterate(sits::SitsStruct)
-# Base.iterate(sits::SitsStruct, sit) = isempty(sit) ? nothing : ## TODO: write first, next (state*state, state+1)
-# # end
+Base.push!(sits::SitsStruct, sit::SitStruct) = push!(sits.dict, sit)
+Base.pop!(sits::SitsStruct, sit::SitStruct) = pop!(sits.dict, sit)
 
 struct Dealer
     ID::UUIDs.UUID
@@ -51,7 +46,6 @@ struct Hands
 end
 Base.push!(hands::Hands, sit::SitStruct, hand::BJCore.Hand) = push!(hands.Sits, sit => hand)
 Base.pop!(hands::Hands, sit::SitStruct) = pop!(hands.Sits, sit)
-
 function get(sits::Dict{SitStruct, BJCore.Hand}, id::Int)
     Base.get(sits, SitStruct(id), BJCore.Hand())
 end
@@ -76,14 +70,10 @@ function Base.show(io::IO, obj::Player)
     println(io, "Player: ", obj.Name, ",\nBank: ", obj.Bank, ",\nPlaying hands: ", obj.Hands.Sits)
 end
 
-Base.push!(sits::SitsStruct, sit::SitStruct) = push!(sits.dict, sit)
-
 function newSit!(player::Player, sit::SitStruct)
     push!(player.Sits, sit)
     push!(player.Hands.Sits, sit => BJCore.Hand())
 end
-
-Base.pop!(sits::SitsStruct, sit::SitStruct) = pop!(sits.dict, sit)
 
 function leaveSit!(player::Player, sit::SitStruct)
     pop!(player.Hands.Sits, sit)
@@ -100,5 +90,4 @@ mutable struct Round
 
     end
 end
-
 end
